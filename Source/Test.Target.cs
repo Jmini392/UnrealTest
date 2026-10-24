@@ -1,3 +1,5 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 using UnrealBuildTool;
 using System.Collections.Generic;
 
@@ -7,7 +9,7 @@ public class TestTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V6;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		ExtraModuleNames.Add("Test");
+
+		ExtraModuleNames.AddRange( new string[] { "Test" } );
 	}
 }
