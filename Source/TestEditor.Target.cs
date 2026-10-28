@@ -10,6 +10,6 @@ public class TestEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V6;
 
-		ExtraModuleNames.AddRange( new string[] { "Test" } );
+		ExtraModuleNames.AddRange( new string[] { "Test", "SleeplessKnight" } );
 	}
 }
