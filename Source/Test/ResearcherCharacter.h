@@ -10,6 +10,7 @@ class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class AResearcherDrone;
+class UNiagaraSystem;
 
 /** WASD로 이동하고 마우스로 카메라를 돌리는 3인칭 캐릭터. 메시와 애님 BP는 Researcher 에셋을 기본값으로 쓴다. */
 UCLASS()
@@ -48,6 +49,8 @@ protected:
 	void StopSprint();
 	void OnRisePressed();
 	void OnRiseReleased();
+	void EmitPulse();
+	void SpawnMeshPulseFx(const FVector& Origin);
 
 	/** 입력 에셋이 비어 있으면 WASD / 마우스 기본 매핑을 코드로 만든다 */
 	void BuildDefaultInput();
@@ -71,6 +74,27 @@ protected:
 	/** 비워두면 왼쪽 쉬프트로 자동 생성 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
+
+	/** 비워두면 R로 자동 생성: 펄스 방출 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	TObjectPtr<UInputAction> PulseAction;
+
+	/** 펄스 연출용 나이아가라 시스템. 비워 두면 메시로 만든 대체 연출을 쓴다. 값은 반경 350cm 기준으로 만들어져 있다 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse")
+	TObjectPtr<UNiagaraSystem> PulseEffect;
+
+	/** 펄스가 퍼지는 반지름 (cm) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse", meta = (ClampMin = "0")) float PulseRadius = 350.f;
+	/** 반경 안의 다른 캐릭터를 밀어내는 거리 (cm)와 걸리는 시간 (초) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse", meta = (ClampMin = "0")) float PulsePushDistance = 400.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse", meta = (ClampMin = "0.02")) float PulsePushDuration = 0.25f;
+	/** 반경 안에서 물리 시뮬레이션 중인 물체를 밀어내는 속도 (cm/s). 0이면 밀지 않는다 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse", meta = (ClampMin = "0")) float PulsePhysicsPush = 600.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pulse", meta = (ClampMin = "0")) float PulseCooldown = 3.f;
+
+	/** 펄스를 방출했을 때 (블루프린트에서 소리 등을 붙일 수 있다) */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pulse")
+	void OnPulseEmitted();
 
 	/** 비워두면 Q로 자동 생성: 드론 시야 전환 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
@@ -98,4 +122,5 @@ protected:
 private:
 	bool bWantsToSprint = false;
 	bool bDroneView = false;
+	double NextPulseTime = 0.0;
 };
